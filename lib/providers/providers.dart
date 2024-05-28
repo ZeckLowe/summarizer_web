@@ -4,3 +4,4 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 //login show/hide password icon
 final showPassIconProvider = StateProvider<bool>((ref) => true);
+final showPassIconProvider2 = StateProvider<bool>((ref) => true);

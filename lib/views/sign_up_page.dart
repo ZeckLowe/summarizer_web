@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:summarizer_web/providers/providers.dart';
-import 'package:summarizer_web/views/sign_up_page.dart';
 
-class StartScreen extends StatelessWidget {
-  const StartScreen({super.key});
+class SignUpPage extends StatelessWidget {
+  const SignUpPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -76,20 +75,20 @@ class SIgnUp extends StatelessWidget {
           width: 160,
         ),
         Text(
-          'Don\'t have an account?',
+          'Already have an account?',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w300),
         ),
         TextButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SignUpPage(),
-              ),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => SignUpPage(),
+            //   ),
+            // );
           },
           child: const Text(
-            'Sign Up',
+            'Sign In',
             style: TextStyle(
                 fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blue),
           ),
@@ -227,15 +226,12 @@ class LoginContainer extends StatelessWidget {
         // mainAxisAlignment: MainAxisAlignment.start,
         children: [
           SizedBox(
-            height: screenHeight - 650,
+            height: screenHeight - 700,
           ),
-          Text(
-            'Welcome Back!',
-            style: TextStyle(
-                fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
+          SignUpText(),
+          JustAQuickText(),
           SizedBox(
-            height: 60,
+            height: 40,
           ),
           EmailAddressText(),
           SizedBox(
@@ -251,21 +247,25 @@ class LoginContainer extends StatelessWidget {
           ),
           PasswordTextField(),
           SizedBox(
+            height: 30,
+          ),
+          ConfirmPasswordText(),
+          SizedBox(
             height: 10,
           ),
-          ForgotPasswordTExt(),
+          ConfirmPassword(),
           SizedBox(
             height: 100,
           ),
-          LoginButton()
+          SignUpButton()
         ],
       ),
     );
   }
 }
 
-class LoginButton extends StatelessWidget {
-  const LoginButton({
+class SignUpButton extends StatelessWidget {
+  const SignUpButton({
     super.key,
   });
 
@@ -281,7 +281,7 @@ class LoginButton extends StatelessWidget {
               color: Colors.white, borderRadius: BorderRadius.circular(10)),
           child: Center(
             child: Text(
-              'Login',
+              'Sign Up',
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 18,
@@ -294,8 +294,8 @@ class LoginButton extends StatelessWidget {
   }
 }
 
-class ForgotPasswordTExt extends StatelessWidget {
-  const ForgotPasswordTExt({
+class ConfirmPasswordText extends StatelessWidget {
+  const ConfirmPasswordText({
     super.key,
   });
 
@@ -304,14 +304,123 @@ class ForgotPasswordTExt extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 570,
+          width: 200,
         ),
         Text(
-          'Forgot Password?',
+          'Confirm Password:',
           style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w400,
-              color: Color.fromARGB(255, 199, 199, 199)),
+              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.white),
+        ),
+      ],
+    );
+  }
+}
+
+class ConfirmPassword extends ConsumerWidget {
+  const ConfirmPassword({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool hidePass = ref.watch(showPassIconProvider2);
+    return Row(
+      children: [
+        SizedBox(
+          width: 200,
+        ),
+        Container(
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(5)),
+          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          width: 500,
+          height: 45,
+          child: Row(
+            children: [
+              Container(
+                height: 40,
+                width: 40,
+                child: Icon(Icons.lock),
+              ),
+              Container(
+                width: 300,
+                height: 45,
+                child: TextField(
+                  obscureText: hidePass,
+                  // controller: controller,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                  ),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Confirm Password',
+                    hintStyle: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ),
+              Spacer(),
+              Container(
+                height: 40,
+                width: 40,
+                child: IconButton(
+                  icon:
+                      Icon(hidePass ? Icons.visibility : Icons.visibility_off),
+                  onPressed: () {
+                    ref.read(showPassIconProvider2.notifier).state = !hidePass;
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class JustAQuickText extends StatelessWidget {
+  const JustAQuickText({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 200,
+        ),
+        Text(
+          'Just a few quick things to get started',
+          style: TextStyle(
+              fontSize: 20, fontWeight: FontWeight.w300, color: Colors.white),
+        ),
+      ],
+    );
+  }
+}
+
+class SignUpText extends StatelessWidget {
+  const SignUpText({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 200,
+        ),
+        Text(
+          'Sign Up',
+          style: TextStyle(
+              fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ],
     );
