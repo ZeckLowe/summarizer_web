@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:summarizer_web/models/models.dart';
 import 'package:summarizer_web/providers/providers.dart';
-import 'package:summarizer_web/views/home_page.dart';
 import 'package:summarizer_web/views/sign_up_page.dart';
 
 class StartScreen extends StatelessWidget {
