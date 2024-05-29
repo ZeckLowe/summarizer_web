@@ -41,25 +41,27 @@ class SignUpContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: screenHeight,
-      width: screenWidth - 888,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: screenHeight - 550,
-          ),
-          OrText(),
-          SizedBox(
-            height: 80,
-          ),
-          OtherSignUp(),
-          SizedBox(
-            height: 150,
-          ),
-          SIgnUp(),
-        ],
+    return Expanded(
+      child: Container(
+        height: screenHeight,
+        width: screenWidth - 888,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: screenHeight - 550,
+            ),
+            OrText(),
+            SizedBox(
+              height: 80,
+            ),
+            OtherSignUp(),
+            SizedBox(
+              height: 150,
+            ),
+            SIgnUp(),
+          ],
+        ),
       ),
     );
   }
@@ -124,7 +126,7 @@ class OtherSignUp extends StatelessWidget {
             ),
           ),
           child: Center(
-            child: Image.asset(
+            child: Image.network(
               'assets/logo_google.jpg',
               width: 24, // Adjust the size of the logo as needed
               height: 24,
@@ -145,7 +147,7 @@ class OtherSignUp extends StatelessWidget {
             ),
           ),
           child: Center(
-            child: Image.asset(
+            child: Image.network(
               'assets/logo_fb.png',
               width: 24, // Adjust the size of the logo as needed
               height: 24,
@@ -166,7 +168,7 @@ class OtherSignUp extends StatelessWidget {
             ),
           ),
           child: Center(
-            child: Image.asset(
+            child: Image.network(
               'assets/discord_logo.jpg',
               width: 24, // Adjust the size of the logo as needed
               height: 24,
@@ -225,43 +227,45 @@ class LoginContainer extends StatelessWidget {
       height: screenHeight,
       width: screenWidth - 600,
       decoration: BoxDecoration(color: Colors.blue),
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: screenHeight - 700,
-          ),
-          SignUpText(),
-          JustAQuickText(),
-          SizedBox(
-            height: 40,
-          ),
-          EmailAddressText(),
-          SizedBox(
-            height: 10,
-          ),
-          EmailTextField(),
-          SizedBox(
-            height: 30,
-          ),
-          PasswordText(),
-          SizedBox(
-            height: 10,
-          ),
-          PasswordTextField(),
-          SizedBox(
-            height: 30,
-          ),
-          ConfirmPasswordText(),
-          SizedBox(
-            height: 10,
-          ),
-          ConfirmPassword(),
-          SizedBox(
-            height: 100,
-          ),
-          SignUpButton()
-        ],
+      child: Expanded(
+        child: Column(
+          // mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: screenHeight - 700,
+            ),
+            SignUpText(),
+            JustAQuickText(),
+            SizedBox(
+              height: 40,
+            ),
+            EmailAddressText(),
+            SizedBox(
+              height: 10,
+            ),
+            EmailTextField(),
+            SizedBox(
+              height: 30,
+            ),
+            PasswordText(),
+            SizedBox(
+              height: 10,
+            ),
+            PasswordTextField(),
+            SizedBox(
+              height: 30,
+            ),
+            ConfirmPasswordText(),
+            SizedBox(
+              height: 10,
+            ),
+            ConfirmPassword(),
+            SizedBox(
+              height: 100,
+            ),
+            SignUpButton()
+          ],
+        ),
       ),
     );
   }

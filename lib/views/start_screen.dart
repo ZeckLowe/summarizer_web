@@ -12,19 +12,12 @@ class StartScreen extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
-      body: Column(
-        children: [
-          Row(
-            children: [
-              LoginContainer(
-                  screenHeight: screenHeight, screenWidth: screenWidth),
-              SignUpContainer(
-                  screenHeight: screenHeight, screenWidth: screenWidth),
-            ],
-          )
-        ],
-      ),
-    );
+        body: Row(
+      children: [
+        LoginContainer(screenHeight: screenHeight, screenWidth: screenWidth),
+        SignUpContainer(screenHeight: screenHeight, screenWidth: screenWidth),
+      ],
+    ));
   }
 }
 
@@ -40,9 +33,8 @@ class SignUpContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: screenHeight,
-      width: screenWidth - 888,
+    return Expanded(
+      flex: 1,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -123,7 +115,7 @@ class OtherSignUp extends StatelessWidget {
             ),
           ),
           child: Center(
-            child: Image.asset(
+            child: Image.network(
               'assets/logo_google.jpg',
               width: 24, // Adjust the size of the logo as needed
               height: 24,
@@ -144,7 +136,7 @@ class OtherSignUp extends StatelessWidget {
             ),
           ),
           child: Center(
-            child: Image.asset(
+            child: Image.network(
               'assets/logo_fb.png',
               width: 24, // Adjust the size of the logo as needed
               height: 24,
@@ -165,7 +157,7 @@ class OtherSignUp extends StatelessWidget {
             ),
           ),
           child: Center(
-            child: Image.asset(
+            child: Image.network(
               'assets/discord_logo.jpg',
               width: 24, // Adjust the size of the logo as needed
               height: 24,
@@ -220,46 +212,50 @@ class LoginContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: screenHeight,
-      width: screenWidth - 600,
-      decoration: BoxDecoration(color: Colors.blue),
-      child: Column(
-        // mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: screenHeight - 650,
-          ),
-          Text(
-            'Welcome Back!',
-            style: TextStyle(
-                fontSize: 35, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-          SizedBox(
-            height: 60,
-          ),
-          EmailAddressText(),
-          SizedBox(
-            height: 10,
-          ),
-          EmailTextField(),
-          SizedBox(
-            height: 30,
-          ),
-          PasswordText(),
-          SizedBox(
-            height: 10,
-          ),
-          PasswordTextField(),
-          SizedBox(
-            height: 10,
-          ),
-          ForgotPasswordTExt(),
-          SizedBox(
-            height: 100,
-          ),
-          LoginButton()
-        ],
+    return Expanded(
+      flex: 2,
+      child: Container(
+        color: Colors.blue,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: screenHeight - 650,
+            ),
+            Text(
+              'Welcome Back!',
+              style: TextStyle(
+                  fontSize: 35,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+            SizedBox(
+              height: 60,
+            ),
+            EmailAddressText(),
+            SizedBox(
+              height: 10,
+            ),
+            EmailTextField(),
+            SizedBox(
+              height: 30,
+            ),
+            PasswordText(),
+            SizedBox(
+              height: 10,
+            ),
+            PasswordTextField(),
+            SizedBox(
+              height: 10,
+            ),
+            ForgotPasswordTExt(),
+            SizedBox(
+              height: 100,
+            ),
+            LoginButton()
+          ],
+        ),
       ),
     );
   }
