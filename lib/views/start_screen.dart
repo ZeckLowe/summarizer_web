@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:summarizer_web/models/models.dart';
 import 'package:summarizer_web/providers/providers.dart';
+import 'package:summarizer_web/views/home_page.dart';
 import 'package:summarizer_web/views/sign_up_page.dart';
 
 class StartScreen extends StatelessWidget {
@@ -264,15 +266,77 @@ class LoginContainer extends StatelessWidget {
   }
 }
 
-class LoginButton extends StatelessWidget {
+class LoginButton extends ConsumerWidget {
   const LoginButton({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        final List<User> users = ref.watch(usersAsyncValue);
+        final String inputEmail = ref.watch(inputEmailProvider);
+        final String inputPassword = ref.watch(inputPasswordProvider);
+        bool emailMatches = false;
+        bool passwordMatches = false;
+
+        for (var user in users) {
+          if (user.email == inputEmail) {
+            emailMatches = true;
+          }
+          if (user.password == inputPassword) {
+            passwordMatches = true;
+          }
+          if (emailMatches == true && passwordMatches == true) {
+            ref.read(currentUserIdProvider.notifier).state = user.id!;
+          }
+        }
+        if (emailMatches == false) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Email Does Not Exist'),
+              content: const Text("Please enter an existing Email"),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        }
+        if (emailMatches == true) {
+          if (passwordMatches == false) {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => AlertDialog(
+                title: const Text('Incorrect Password'),
+                content: const Text("Please enter the correct password"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Close'),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+        if (emailMatches == true && passwordMatches == true) {
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => HomePage(),
+          //   ),
+          // );
+        }
+      },
       child: Center(
         child: Container(
           width: 500,
@@ -349,7 +413,6 @@ class PasswordTextField extends ConsumerWidget {
                 height: 45,
                 child: TextField(
                   obscureText: hidePass,
-                  // controller: controller,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -363,6 +426,9 @@ class PasswordTextField extends ConsumerWidget {
                       fontSize: 13,
                     ),
                   ),
+                  onChanged: (value) {
+                    ref.read(inputPasswordProvider.notifier).state = value;
+                  },
                 ),
               ),
               Spacer(),
@@ -407,13 +473,13 @@ class PasswordText extends StatelessWidget {
   }
 }
 
-class EmailTextField extends StatelessWidget {
+class EmailTextField extends ConsumerWidget {
   const EmailTextField({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         SizedBox(
@@ -436,13 +502,6 @@ class EmailTextField extends StatelessWidget {
                 width: 300,
                 height: 45,
                 child: TextField(
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => SearchView2()),
-                    // );
-                  },
-                  // controller: controller,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -456,6 +515,11 @@ class EmailTextField extends StatelessWidget {
                       fontSize: 13,
                     ),
                   ),
+                  onChanged: (value) async {
+                    ref.read(inputEmailProvider.notifier).state = value;
+                    final userList = await ref.watch(userProvider.future);
+                    ref.read(usersAsyncValue.notifier).state = userList;
+                  },
                 ),
               ),
             ],

@@ -1,6 +1,9 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:summarizer_web/models/models.dart';
 import 'package:summarizer_web/providers/providers.dart';
+import 'package:summarizer_web/views/start_screen.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({super.key});
@@ -264,15 +267,137 @@ class LoginContainer extends StatelessWidget {
   }
 }
 
-class SignUpButton extends StatelessWidget {
+class SignUpButton extends ConsumerWidget {
   const SignUpButton({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () async {
+        // final AsyncValue<List<User>> usersAsyncValue = ref.watch(userProvider);
+        final List<User> users = ref.watch(usersAsyncValue);
+        final String inputEmail = ref.watch(inputEmailProvider);
+        final String inputPassword = ref.watch(inputPasswordProvider);
+        final String inputConfirmPassword =
+            ref.watch(inputConfirmPasswordProvider);
+        bool emailAlreadyExists = false;
+        bool emailIsValid = true;
+        bool passwordLength = false;
+        bool passwordMatch = false;
+
+        for (var user in users) {
+          if (user.email == inputEmail) {
+            emailAlreadyExists = true;
+          }
+        }
+        if (!EmailValidator.validate(inputEmail)) {
+          emailIsValid = false;
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Invalid Email Format'),
+              content: const Text("Please enter a valid email address."),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        }
+        if (emailAlreadyExists) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Email Already exists'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Please enter Another Email"),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        }
+        if (inputPassword.length < 8) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Password Too Short'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Password length must at least be 8 characters"),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          passwordLength = true;
+        }
+        if (inputPassword != inputConfirmPassword) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text('Password Match Error'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Password does not match confirm password"),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        } else {
+          passwordMatch = true;
+        }
+        if (emailIsValid == true &&
+            emailAlreadyExists == false &&
+            passwordMatch == true &&
+            passwordLength == true) {
+          await ref
+              .read(userCreateProvider.notifier)
+              .addUser(User(email: inputEmail, password: inputPassword));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => StartScreen(),
+            ),
+          );
+        }
+      },
       child: Center(
         child: Container(
           width: 500,
@@ -343,11 +468,10 @@ class ConfirmPassword extends ConsumerWidget {
                 child: Icon(Icons.lock),
               ),
               Container(
-                width: 300,
+                width: 410,
                 height: 45,
                 child: TextField(
                   obscureText: hidePass,
-                  // controller: controller,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -361,6 +485,10 @@ class ConfirmPassword extends ConsumerWidget {
                       fontSize: 13,
                     ),
                   ),
+                  onChanged: (value) {
+                    ref.read(inputConfirmPasswordProvider.notifier).state =
+                        value;
+                  },
                 ),
               ),
               Spacer(),
@@ -454,11 +582,10 @@ class PasswordTextField extends ConsumerWidget {
                 child: Icon(Icons.lock),
               ),
               Container(
-                width: 300,
+                width: 410,
                 height: 45,
                 child: TextField(
                   obscureText: hidePass,
-                  // controller: controller,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -472,6 +599,9 @@ class PasswordTextField extends ConsumerWidget {
                       fontSize: 13,
                     ),
                   ),
+                  onChanged: (value) {
+                    ref.read(inputPasswordProvider.notifier).state = value;
+                  },
                 ),
               ),
               Spacer(),
@@ -516,13 +646,13 @@ class PasswordText extends StatelessWidget {
   }
 }
 
-class EmailTextField extends StatelessWidget {
+class EmailTextField extends ConsumerWidget {
   const EmailTextField({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       children: [
         SizedBox(
@@ -542,16 +672,9 @@ class EmailTextField extends StatelessWidget {
                 child: Icon(Icons.email),
               ),
               Container(
-                width: 300,
+                width: 450,
                 height: 45,
                 child: TextField(
-                  onTap: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => SearchView2()),
-                    // );
-                  },
-                  // controller: controller,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -565,6 +688,11 @@ class EmailTextField extends StatelessWidget {
                       fontSize: 13,
                     ),
                   ),
+                  onChanged: (value) async {
+                    ref.read(inputEmailProvider.notifier).state = value;
+                    final userList = await ref.watch(userProvider.future);
+                    ref.read(usersAsyncValue.notifier).state = userList;
+                  },
                 ),
               ),
             ],
