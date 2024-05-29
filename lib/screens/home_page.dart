@@ -156,6 +156,68 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _editChat(int chatIndex) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String editedName = _chatNames[chatIndex];
+        return AlertDialog(
+          title: const Text('Edit chat name'),
+          content: TextField(
+            decoration: InputDecoration(hintText: 'Edit chat name'),
+            onChanged: (value) {
+              editedName = value;
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final response = await http.put(
+                  Uri.parse(
+                      'http://127.0.0.1:8000/api/v1/chats/${chatIndex + 1}/'),
+                  body: jsonEncode({'name': editedName}),
+                  headers: {'Content-Type': 'application/json'},
+                );
+                if (response.statusCode == 200) {
+                  setState(() {
+                    _chatNames[chatIndex] = editedName;
+                  });
+                  Navigator.of(context).pop();
+                } else {
+                  throw Exception('Failed to update chat name');
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _deleteChat(int chatIndex) async {
+    final response = await http.delete(
+      Uri.parse('http://127.0.0.1:8000/api/v1/chats/${chatIndex + 1}/'),
+    );
+    if (response.statusCode == 204) {
+      setState(() {
+        _chatNames.removeAt(chatIndex);
+        _chatMessages.remove(chatIndex);
+        if (_selectedIndex == chatIndex) {
+          _selectedIndex = 0; // Select 'New Chat' if current chat is deleted
+        }
+      });
+    } else {
+      throw Exception('Failed to delete chat');
+    }
+  }
+
   Widget _buildSidebar() {
     return Container(
       width: 200,
@@ -178,7 +240,21 @@ class _HomePageState extends State<HomePage> {
             );
           } else {
             return ListTile(
-              title: Text(_chatNames[index - 1]),
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(_chatNames[index - 1]),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.white, size: 20),
+                    onPressed: () => _editChat(index - 1),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete, color: Colors.white, size: 20),
+                    onPressed: () => _deleteChat(index - 1),
+                  ),
+                ],
+              ),
               onTap: () => _onItemTapped(index),
               selected: _selectedIndex == index,
               tileColor: _selectedIndex == index
