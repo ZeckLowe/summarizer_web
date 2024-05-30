@@ -85,12 +85,12 @@ class SIgnUp extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => SignUpPage(),
-            //   ),
-            // );
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => StartScreen(),
+              ),
+            );
           },
           child: const Text(
             'Sign In',
@@ -280,8 +280,7 @@ class SignUpButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () async {
-        // final AsyncValue<List<User>> usersAsyncValue = ref.watch(userProvider);
-        final List<User> users = ref.watch(usersAsyncValue);
+        final AsyncValue<List<User>> usersAsyncValue = ref.watch(userProvider);
         final String inputEmail = ref.watch(inputEmailProvider);
         final String inputPassword = ref.watch(inputPasswordProvider);
         final String inputConfirmPassword =
@@ -290,12 +289,17 @@ class SignUpButton extends ConsumerWidget {
         bool emailIsValid = true;
         bool passwordLength = false;
         bool passwordMatch = false;
-
-        for (var user in users) {
-          if (user.email == inputEmail) {
-            emailAlreadyExists = true;
-          }
-        }
+        usersAsyncValue.when(
+          data: (users) async {
+            for (var user in users) {
+              if (user.email == inputEmail) {
+                emailAlreadyExists = true;
+              }
+            }
+          },
+          loading: () => CircularProgressIndicator(),
+          error: (err, stackTrace) => Center(child: Text("Error: $err")),
+        );
         if (!EmailValidator.validate(inputEmail)) {
           emailIsValid = false;
           showDialog(
@@ -346,7 +350,7 @@ class SignUpButton extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Password length must at least be 8 characters"),
+                  Text("Password length must be at least 8 characters"),
                 ],
               ),
               actions: [
@@ -694,8 +698,7 @@ class EmailTextField extends ConsumerWidget {
                   ),
                   onChanged: (value) async {
                     ref.read(inputEmailProvider.notifier).state = value;
-                    final userList = await ref.watch(userProvider.future);
-                    ref.read(usersAsyncValue.notifier).state = userList;
+                    await ref.watch(userProvider.future);
                   },
                 ),
               ),
