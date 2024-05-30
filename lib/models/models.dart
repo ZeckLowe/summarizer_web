@@ -25,59 +25,86 @@ class User {
   }
 }
 
-class Chat {
-  final int id;
-  final String name;
-  final List<Message> messages;
+class InputSummary {
+  final int? id;
+  final int user;
+  final String originalText;
+  final String? summarizedText;
 
-  Chat({
-    required this.id,
-    required this.name,
-    required this.messages,
-  });
-
-  factory Chat.fromJson(Map<String, dynamic> json) {
-    var messagesFromJson = json['messages'] as List;
-    List<Message> messageList =
-        messagesFromJson.map((i) => Message.fromJson(i)).toList();
-
-    return Chat(
-      id: json['id'],
-      name: json['name'],
-      messages: messageList,
+  InputSummary(
+      {this.id,
+      required this.user,
+      required this.originalText,
+      this.summarizedText});
+  factory InputSummary.fromJson(Map<String, dynamic> json) {
+    return InputSummary(
+      id: json['id'] as int,
+      user: json['user'] as int,
+      originalText: json['original_text'] as String,
+      summarizedText: json['summarized_text'] as String,
     );
   }
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'messages': messages.map((message) => message.toJson()).toList(),
-      };
-}
-
-class Message {
-  final int id;
-  final int chatId;
-  final String text;
-  final String timestamp;
-
-  Message(
-      {required this.id,
-      required this.chatId,
-      required this.text,
-      required this.timestamp});
-
-  factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-        id: json['id'],
-        chatId: json['chatId'],
-        text: json['text'],
-        timestamp: json['timestamp']);
+  Map<String, dynamic> toJson() {
+    return {
+      'user': user,
+      'original_text': originalText,
+    };
   }
-
-  Map<String, dynamic> toJson() => {
-        'chat': chatId,
-        'text': text,
-        'timestamp': timestamp,
-      };
 }
+
+// class Chat {
+//   final int id;
+//   final String name;
+//   final List<Message> messages;
+
+//   Chat({
+//     required this.id,
+//     required this.name,
+//     required this.messages,
+//   });
+
+//   factory Chat.fromJson(Map<String, dynamic> json) {
+//     var messagesFromJson = json['messages'] as List;
+//     List<Message> messageList =
+//         messagesFromJson.map((i) => Message.fromJson(i)).toList();
+
+//     return Chat(
+//       id: json['id'],
+//       name: json['name'],
+//       messages: messageList,
+//     );
+//   }
+
+//   Map<String, dynamic> toJson() => {
+//         'id': id,
+//         'name': name,
+//         'messages': messages.map((message) => message.toJson()).toList(),
+//       };
+// }
+
+// class Message {
+//   final int id;
+//   final int chatId;
+//   final String text;
+//   final String timestamp;
+
+//   Message(
+//       {required this.id,
+//       required this.chatId,
+//       required this.text,
+//       required this.timestamp});
+
+//   factory Message.fromJson(Map<String, dynamic> json) {
+//     return Message(
+//         id: json['id'],
+//         chatId: json['chatId'],
+//         text: json['text'],
+//         timestamp: json['timestamp']);
+//   }
+
+//   Map<String, dynamic> toJson() => {
+//         'chat': chatId,
+//         'text': text,
+//         'timestamp': timestamp,
+//       };
+// }

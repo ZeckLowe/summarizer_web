@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:summarizer_web/models/models.dart';
 import 'package:summarizer_web/providers/providers.dart';
+import 'package:summarizer_web/screens/home_page.dart';
+import 'package:summarizer_web/views/home_page.dart';
 import 'package:summarizer_web/views/sign_up_page.dart';
 
 class StartScreen extends StatelessWidget {
@@ -66,7 +68,7 @@ class SIgnUp extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 160,
+          width: 110,
         ),
         Text(
           'Don\'t have an account?',
@@ -102,7 +104,7 @@ class OtherSignUp extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 150,
+          width: 100,
         ),
         Container(
           width: 40, // Adjust the size as needed
@@ -179,7 +181,7 @@ class OrText extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 100,
+          width: 50,
         ),
         Container(
           height: 3,
@@ -269,30 +271,41 @@ class LoginButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
-      onTap: () {
-        final List<User> users = ref.watch(usersAsyncValue);
+      onTap: () async {
+        final AsyncValue<List<User>> usersAsyncValue = ref.watch(userProvider);
         final String inputEmail = ref.watch(inputEmailProvider);
         final String inputPassword = ref.watch(inputPasswordProvider);
         bool emailMatches = false;
         bool passwordMatches = false;
-
-        for (var user in users) {
-          if (user.email == inputEmail) {
-            emailMatches = true;
-          }
-          if (user.password == inputPassword) {
-            passwordMatches = true;
-          }
-          if (emailMatches == true && passwordMatches == true) {
-            ref.read(currentUserIdProvider.notifier).state = user.id!;
-          }
-        }
-        if (emailMatches == false) {
+        usersAsyncValue.when(
+          data: (users) async {
+            for (var user in users) {
+              if (user.email == inputEmail) {
+                emailMatches = true;
+                if (user.password == inputPassword) {
+                  passwordMatches = true;
+                  ref.read(currentUserIdProvider.notifier).state = user.id!;
+                }
+              }
+            }
+          },
+          loading: () => CircularProgressIndicator(),
+          error: (err, stackTrace) => Center(child: Text("Error: $err")),
+        );
+        print(ref.read(currentUserIdProvider));
+        if (emailMatches == true && passwordMatches == true) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomePage2(),
+            ),
+          );
+        } else {
           showDialog(
             context: context,
             builder: (BuildContext context) => AlertDialog(
-              title: const Text('Email Does Not Exist'),
-              content: const Text("Please enter an existing Email"),
+              title: const Text('Incorrect Email/Password'),
+              content: const Text("Check Email or Password"),
               actions: [
                 TextButton(
                   onPressed: () {
@@ -303,33 +316,6 @@ class LoginButton extends ConsumerWidget {
               ],
             ),
           );
-        }
-        if (emailMatches == true) {
-          if (passwordMatches == false) {
-            showDialog(
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text('Incorrect Password'),
-                content: const Text("Please enter the correct password"),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Close'),
-                  ),
-                ],
-              ),
-            );
-          }
-        }
-        if (emailMatches == true && passwordMatches == true) {
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => HomePage(),
-          //   ),
-          // );
         }
       },
       child: Center(
@@ -363,7 +349,7 @@ class ForgotPasswordTExt extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 570,
+          width: 615,
         ),
         Text(
           'Forgot Password?',
@@ -388,7 +374,7 @@ class PasswordTextField extends ConsumerWidget {
     return Row(
       children: [
         SizedBox(
-          width: 200,
+          width: 240,
         ),
         Container(
           decoration: BoxDecoration(
@@ -404,7 +390,7 @@ class PasswordTextField extends ConsumerWidget {
                 child: Icon(Icons.lock),
               ),
               Container(
-                width: 300,
+                width: 400,
                 height: 45,
                 child: TextField(
                   obscureText: hidePass,
@@ -456,7 +442,7 @@ class PasswordText extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 200,
+          width: 240,
         ),
         Text(
           'Password:',
@@ -478,7 +464,7 @@ class EmailTextField extends ConsumerWidget {
     return Row(
       children: [
         SizedBox(
-          width: 200,
+          width: 240,
         ),
         Container(
           decoration: BoxDecoration(
@@ -494,7 +480,7 @@ class EmailTextField extends ConsumerWidget {
                 child: Icon(Icons.email),
               ),
               Container(
-                width: 300,
+                width: 440,
                 height: 45,
                 child: TextField(
                   style: TextStyle(
@@ -512,8 +498,7 @@ class EmailTextField extends ConsumerWidget {
                   ),
                   onChanged: (value) async {
                     ref.read(inputEmailProvider.notifier).state = value;
-                    final userList = await ref.watch(userProvider.future);
-                    ref.read(usersAsyncValue.notifier).state = userList;
+                    await ref.watch(userProvider.future);
                   },
                 ),
               ),
@@ -535,7 +520,7 @@ class EmailAddressText extends StatelessWidget {
     return Row(
       children: [
         SizedBox(
-          width: 200,
+          width: 240,
         ),
         Text(
           'Email Address:',
