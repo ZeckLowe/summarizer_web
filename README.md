@@ -1,4 +1,4 @@
-# summarizer_web
+# A Bisaya Summarizer Web Application
 
 A new Flutter project.
 
